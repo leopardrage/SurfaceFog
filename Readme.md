@@ -4,18 +4,19 @@
 
 ## Requirements
 
-- Universal Rendering Pipeline
+- Unity 2020+
 
-- Unity 2019.3.0a12+
+## Compatibility
+
+- Built-In Rendering Pipeline
+- Universal Rendering Pipeline
 
 ## Get Started
 
-- Set **Rendering Path** in your Universal Renderer Data settings to **Deferred**
-
-    --or--
-
-    Set the **Depth Texture** option to **On** for your camera (or set it globally in your pipeline settings asset).
-
+- **Enable Depth Texture**. You can do this in many ways. Here are the most common approaches:
+  - Activating Depth Texture on your camera. In URP, set the **Depth Texture** option to **On** for your camera (or set it globally in your pipeline settings asset). In Built-In RP, set the **Camera.DepthTextureMode** for your camera via script.
+  - Having a non-black non-0 intensity **directional light** in the scene will automatically create a depth texture in Built-In RP, while in URP you'll have to use the Screen Space Shadow Maps render feature.
+  - Enable **Deferred Render Path**.
 - Create a material that uses the **Surface Fog** shader and apply it to a mesh.
 
 All regular geometry that falls through this mash will fade according to the material settings.
@@ -34,7 +35,7 @@ This is not a volumetric fog effect, so it works only when the camera is above t
 **Surface Fog** doesn't work with orthographic cameras and oblique frustrums.
 
 ## Performance Considerations
-The **Surface Fog** shader does cheap operations. However it relies on the depth texture to work, which takes a full scene draw of ShadowCaster passes to fill it. If you were already using the Depth Texture or you were already working in Deferred Mode, you won't experiment almost any performance drop. Otherwise this new draw cicle will be added, which is a little expansive.
+The **Surface Fog** shader does cheap operations. However it relies on the depth texture to work, which takes a full scene draw of ShadowCaster passes to fill it. If you were already using the Depth Texture, because you were already using features that need it (typical examples: directional light in Built-In RP or Deferred Rendering Path), you won't experience almost any performance drop. Otherwise this new draw cicle will be added, which is a little expansive.
 
-## TODO
-- Add compatibility for the Built-in Rendering Pipeline.
+## Known Issues
+- Due to a bug that seems to persist in Unity, I couldn't take advantage of the RenderPipeline tag to create a shader that were automatically compatible with both Built-In RP and URP. So, if you are using the Built-In Pipeline, you'll have to apply a minor manual change on the shader code. See the tag section of the second sub shader in the **SurfaceFog** shader file for details.
