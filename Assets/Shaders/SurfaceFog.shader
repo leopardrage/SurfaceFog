@@ -17,9 +17,19 @@ Shader "Custom/Surface Fog"
 
     SubShader
     {
+        PackageRequirements
+        {
+            "com.unity.render-pipelines.universal": "7.0"
+        }
+
         // For the fog to work it's important that the Queue is set to "Queue" = "Transparent+1", so that
         // the fog mesh renders after all geometry is rendered and its values can blend with geometry ones.
-        Tags { "RenderType" = "Fade" "RenderPipeline" = "UniversalRenderPipeline" "Queue" = "Transparent+1" }
+        Tags
+        {
+            "RenderPipeline" = "UniversalPipeline"
+            "RenderType" = "Fade"
+            "Queue" = "Transparent+1"
+        }
 
         Pass
         {
@@ -87,14 +97,7 @@ Shader "Custom/Surface Fog"
 
     SubShader
     {
-        // NOTE: According to documentation, omitting the RenderPipeline tag tells Unity that this subshader should not be compatible
-        // with neither URP nor HDRP. So, by doing so, we can define a fallback sub shader for the Built-In Rendering Pipeline. And this
-        // works when working with the Built-In Pipeline. However, with URP, it causes this sub shader to used INSTEAD of the previous
-        // one, which explicly specifies "RenderPipeline" = "UniversalRenderPipeline". By sheer luck, this still works, maybe because no URP
-        // specific features are involved, but it's not the intended behaviour. I'm keeping it this way waiting for a fix on Unity.
-        // Meanwhile, to ensure compatibility, the user should switch between the following two rows, based on the rendering pipeline in use.
-        Tags { "RenderType" = "Fade" "RenderPipeline" = "StandardPipeline" "Queue" = "Transparent+1" } // URP
-        // Tags { "RenderType" = "Fade" "Queue" = "Transparent+1" } // Built-In Rendering Pipeline
+        Tags { "RenderType" = "Fade" "Queue" = "Transparent+1" }
 
         Pass
         {

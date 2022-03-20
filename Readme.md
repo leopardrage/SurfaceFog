@@ -4,7 +4,10 @@
 
 ## Requirements
 
-- Unity 2020+
+- Unity 2020.3.16f1+
+- Unity 2021.1.17f1+
+
+What drives the requirements is the Package Requirements feature, that allows the SurfaceFog shader to correctly compile with the Built-In RP, avoiding errors due to missing URP packages.
 
 ## Compatibility
 
@@ -36,6 +39,3 @@ This is not a volumetric fog effect, so it works only when the camera is above t
 
 ## Performance Considerations
 The **Surface Fog** shader does cheap operations. However it relies on the depth texture to work, which takes a full scene draw of ShadowCaster passes to fill it. If you were already using the Depth Texture, because you were already using features that need it (typical examples: directional light in Built-In RP or Deferred Rendering Path), you won't experience almost any performance drop. Otherwise this new draw cicle will be added, which is a little expansive.
-
-## Known Issues
-- Due to a bug that seems to persist in Unity, I couldn't take advantage of the RenderPipeline tag to create a shader that were automatically compatible with both Built-In RP and URP. So, if you are using the Built-In Pipeline, you'll have to apply a minor manual change on the shader code. See the tag section of the second sub shader in the **SurfaceFog** shader file for details.
