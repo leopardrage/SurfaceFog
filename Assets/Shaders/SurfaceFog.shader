@@ -27,8 +27,7 @@ Shader "Custom/Surface Fog"
         Tags
         {
             "RenderPipeline" = "UniversalPipeline"
-            "RenderType" = "Fade"
-            "Queue" = "Transparent+1"
+            "Queue" = "Geometry+1"
         }
 
         Pass
@@ -97,7 +96,10 @@ Shader "Custom/Surface Fog"
 
     SubShader
     {
-        Tags { "RenderType" = "Fade" "Queue" = "Transparent+1" }
+        Tags
+        {
+            "Queue" = "Geometry+1"
+        }
 
         Pass
         {

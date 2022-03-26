@@ -35,7 +35,12 @@ Check the **FogExample** scene for a reference.
 This is not a volumetric fog effect, so it works only when the camera is above the mesh that uses the fog, not when inside it.
 
 ## Limitations
-**Surface Fog** doesn't work with orthographic cameras and oblique frustrums.
+- **Surface Fog** doesn't work with orthographic cameras and oblique frustrums.
+- Transparent objects would be unaffected by the fog.
 
 ## Performance Considerations
 The **Surface Fog** shader does cheap operations. However it relies on the depth texture to work, which takes a full scene draw of ShadowCaster passes to fill it. If you were already using the Depth Texture, because you were already using features that need it (typical examples: directional light in Built-In RP or Deferred Rendering Path), you won't experience almost any performance drop. Otherwise this new draw cicle will be added, which is a little expansive.
+
+## TODO
+- Add compatibility with orthographic cameras.
+- Apply fog effect to transparent objects.
