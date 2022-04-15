@@ -15,6 +15,29 @@ Shader "Custom/Surface Fog"
         _FogStrength ("Fog Strength", Float) = 1
     }
 
+    HLSLINCLUDE
+
+    struct Attributes
+    {
+        float4 positionOS   : POSITION;                 
+    };
+
+    struct Varyings
+    {
+        float4 positionHCS  : SV_POSITION;
+        float4 positionVS   : TEXCOORD0;
+    };
+
+    float SurfaceFog(float rawDepth, float4 viewPos, float4 zBufferParam, float fogStrength) {
+        // Decode linear depth from the depth texture (same implementation of LinearEyeDepth, URP)
+        // Transform depth texture values (in clip space, thus non linear) in view space values.
+        float sceneZ = 1.0 / (zBufferParam.z * rawDepth + zBufferParam.w);
+        float thisZ = abs(viewPos.z);
+        return saturate(fogStrength * (sceneZ - thisZ)); 
+    }
+
+    ENDHLSL
+
     SubShader
     {
         PackageRequirements
@@ -22,12 +45,13 @@ Shader "Custom/Surface Fog"
             "com.unity.render-pipelines.universal": "7.0"
         }
 
-        // For the fog to work it's important that the Queue is set to "Queue" = "Transparent+1", so that
-        // the fog mesh renders after all geometry is rendered and its values can blend with geometry ones.
+        // For the fog to work it's important that the Queue is set to "Queue" = "Transparent-1", so that
+        // the fog mesh renders after all opaque objects are rendered (including skyboxes, that are rendered between
+        // geometry and transparent objects) and its values can blend with already rendered ones.
         Tags
         {
             "RenderPipeline" = "UniversalPipeline"
-            "Queue" = "Geometry+1"
+            "Queue" = "Transparent-1"
         }
 
         Pass
@@ -49,7 +73,6 @@ Shader "Custom/Surface Fog"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             // Provide utilites to access the depth texture through the SampleSceneDepth method.
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
-            #include "SurfaceFogShared.cginc"
 
             // SRP Batcher compatibility
             CBUFFER_START(UnityPerMaterial)
@@ -98,7 +121,7 @@ Shader "Custom/Surface Fog"
     {
         Tags
         {
-            "Queue" = "Geometry+1"
+            "Queue" = "Transparent-1"
         }
 
         Pass
@@ -106,13 +129,12 @@ Shader "Custom/Surface Fog"
             Blend SrcAlpha OneMinusSrcAlpha
             ZWrite Off
 
-            CGPROGRAM
+            HLSLPROGRAM
 
             #pragma vertex vert
             #pragma fragment frag
 
             #include "UnityCG.cginc"
-            #include "SurfaceFogShared.cginc"
 
             UNITY_DECLARE_DEPTH_TEXTURE(_CameraDepthTexture);
 
@@ -138,7 +160,7 @@ Shader "Custom/Surface Fog"
                 return resultColor;
             }
 
-            ENDCG
+            ENDHLSL
         }
     }
 }
